@@ -1,6 +1,7 @@
-# Raskara Boutique - Aplikasi Manajemen Toko Butik
+# Raskara Boutique - Aplikasi Manajemen Toko Butik 
 
 Aplikasi Flutter untuk manajemen toko butik dengan fitur autentikasi, dashboard penjualan, transaksi, histori, dan integrasi Firebase.
+- note* Masih dalam pengembangan.
 
 ![Logo Aplikasi](assets/images/Logo.png)  
 
@@ -102,3 +103,4 @@ Aplikasi Flutter untuk manajemen toko butik dengan fitur autentikasi, dashboard 
 
 ## 🤝 Kontributor
 - Rafi Hana - Developer
+
