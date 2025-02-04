@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/auth_service.dart';
-import 'login_screen.dart';
+import '../services/auth_service.dart'; // Pastikan import AuthService
+import 'login_screen.dart'; // Pastikan import LoginScreen
 
 class RegisterScreen extends StatelessWidget {
   final _formKey = GlobalKey<FormState>();

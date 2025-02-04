@@ -12,7 +12,12 @@
           "package_name": "com.example.raskara_boutique"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "1052369246355-c5r298us2co38i9l4ul625qp8po1vd16.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA0ijMu79jSpmwLrqqEZHpuOgjquIVT53M"
@@ -20,7 +25,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1052369246355-c5r298us2co38i9l4ul625qp8po1vd16.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1052369246355-fhdc8p1jddgvohjkr3mqn6ahtc9l18tv.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.raskaraBoutique"
+              }
+            }
+          ]
         }
       }
     }
