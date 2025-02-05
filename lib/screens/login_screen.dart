@@ -14,60 +14,122 @@ class LoginScreen extends StatelessWidget {
     final authService = Provider.of<AuthService>(context);
 
     return Scaffold(
-      appBar: AppBar(title: Text('Login')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) {
-                  if (value!.isEmpty) return 'Email tidak boleh kosong';
-                  return null;
-                },
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/images/Logo.png',
+              width: 150, 
+              height: 150, 
+            ),
+            SizedBox(height: 40),
+            Form(
+              key: _formKey,
+              child: Column(
+                children: [
+                  Container(
+                    width: 300, 
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.grey[200],
+                    ),
+                    child: TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                      ),
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Email tidak boleh kosong';
+                        return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Container(
+                    width: 300, 
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: Colors.grey[200],
+                    ),
+                    child: TextFormField(
+                      controller: _passwordController,
+                      decoration: InputDecoration(
+                        labelText: 'Password',
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                      ),
+                      obscureText: true,
+                      validator: (value) {
+                        if (value!.isEmpty) return 'Password tidak boleh kosong';
+                        return null;
+                      },
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  // Login Button
+                  Container(
+                    width: 300, 
+                    height: 50, 
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          final user = await authService.login(
+                            _emailController.text,
+                            _passwordController.text,
+                          );
+                          if (user != null) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => DashboardScreen()),
+                            );
+                          }
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
+                      child: Text(
+                        'LOGIN',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w900,
+                            color: Colors.black,
+                          ),
+                        ),
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Don't have an account? ",
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => RegisterScreen()),
+                          );
+                        },
+                        child: Text(
+                          "Register",
+                          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) {
-                  if (value!.isEmpty) return 'Password tidak boleh kosong';
-                  return null;
-                },
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () async {
-                  if (_formKey.currentState!.validate()) {
-                    final user = await authService.login(
-                      _emailController.text,
-                      _passwordController.text,
-                    );
-                    if (user != null) {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => DashboardScreen()),
-                      );
-                    }
-                  }
-                },
-                child: Text('Login'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RegisterScreen()),
-                  );
-                },
-                child: Text('Belum punya akun? Daftar disini'),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
