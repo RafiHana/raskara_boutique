@@ -7,7 +7,6 @@ import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/auth_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 void main() async {

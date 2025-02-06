@@ -36,3 +36,6 @@ flutter:
     - assets/images/nav_transaction.svg
     - assets/images/nav_history.svg
     - assets/images/nav_home.svg
+    - assets/images/plus.svg
+    - assets/images/minus.svg
+    - assets/images/cart.svg

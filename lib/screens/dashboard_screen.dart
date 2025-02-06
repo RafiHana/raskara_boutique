@@ -13,7 +13,7 @@ class DashboardScreen extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Dashboad'),
-          automaticallyImplyLeading: false, 
+          automaticallyImplyLeading: false,
         ),
         body: Column(
           children: [
