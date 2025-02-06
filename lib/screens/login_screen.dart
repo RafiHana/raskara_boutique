@@ -14,6 +14,7 @@ class LoginScreen extends StatelessWidget {
     final authService = Provider.of<AuthService>(context);
 
     return Scaffold(
+      backgroundColor: Color.fromARGB(255, 199, 180, 246),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -21,19 +22,19 @@ class LoginScreen extends StatelessWidget {
           children: [
             Image.asset(
               'assets/images/Logo.png',
-              width: 150, 
-              height: 150, 
+              width: 200,
+              height: 200,
             ),
-            SizedBox(height: 40),
+            SizedBox(height: 20),
             Form(
               key: _formKey,
               child: Column(
                 children: [
                   Container(
-                    width: 300, 
+                    width: 300,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
-                      color: Colors.grey[200],
+                      color: const Color.fromARGB(168, 238, 238, 238),
                     ),
                     child: TextFormField(
                       controller: _emailController,
@@ -50,10 +51,10 @@ class LoginScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Container(
-                    width: 300, 
+                    width: 300,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(30),
-                      color: Colors.grey[200],
+                      color: const Color.fromARGB(168, 238, 238, 238),
                     ),
                     child: TextFormField(
                       controller: _passwordController,
@@ -64,17 +65,23 @@ class LoginScreen extends StatelessWidget {
                       ),
                       obscureText: true,
                       validator: (value) {
-                        if (value!.isEmpty) return 'Password tidak boleh kosong';
+                        if (value!.isEmpty)
+                          return 'Password tidak boleh kosong';
                         return null;
                       },
                     ),
                   ),
                   SizedBox(height: 20),
-                  // Login Button
                   Container(
-                    width: 300, 
-                    height: 50, 
+                    width: 300,
+                    height: 50,
                     child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 132, 98, 235),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                      ),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           final user = await authService.login(
@@ -90,18 +97,13 @@ class LoginScreen extends StatelessWidget {
                           }
                         }
                       },
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                        ),
-                      ),
                       child: Text(
                         'LOGIN',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w900,
-                            color: Colors.black,
-                          ),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
                         ),
+                      ),
                     ),
                   ),
                   SizedBox(height: 20),
@@ -116,12 +118,15 @@ class LoginScreen extends StatelessWidget {
                         onTap: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => RegisterScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => RegisterScreen()),
                           );
                         },
                         child: Text(
                           "Register",
-                          style: TextStyle(color: Colors.orange, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              color: Colors.orange,
+                              fontWeight: FontWeight.bold),
                         ),
                       ),
                     ],
