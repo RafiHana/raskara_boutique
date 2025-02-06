@@ -8,35 +8,16 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        // Keluar dari aplikasi ketika tombol back ditekan
         return true;
       },
       child: Scaffold(
         appBar: AppBar(
           title: Text('Dashboad'),
-          automaticallyImplyLeading: false, // Menghilangkan tombol back
+          automaticallyImplyLeading: false, 
         ),
         body: Column(
           children: [
             ChartWidget(),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => TransactionScreen()),
-                );
-              },
-              child: Text('Transaksi'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => HistoryScreen()),
-                );
-              },
-              child: Text('Histori'),
-            ),
           ],
         ),
       ),

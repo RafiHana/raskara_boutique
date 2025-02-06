@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'login_screen.dart';
 import 'dashboard_screen.dart';
 import '../services/auth_service.dart';
+import 'package:raskara_boutique/main.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -24,7 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => isLoggedIn ? DashboardScreen() : LoginScreen(),
+          builder: (context) =>
+              isLoggedIn ? MyRaskaraNavigation() : LoginScreen(),
         ),
       );
     });
