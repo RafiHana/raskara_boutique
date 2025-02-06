@@ -20,7 +20,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final authService = Provider.of<AuthService>(context);
 
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 199, 180, 246),
+      backgroundColor: Color.fromARGB(255, 208, 193, 248),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -94,32 +94,37 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           width: 300,
                           height: 50,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 132, 98, 235),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(30),
+                          child: Material( 
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            elevation: 7.0, 
+                            borderRadius: BorderRadius.circular(30),
+                            child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color.fromARGB(255, 157, 126, 252),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
+                                ),
                               ),
-                            ),
-                            onPressed: () async {
-                              if (_formKey.currentState!.validate()) {
-                                final user = await authService.login(
-                                  _emailController.text,
-                                  _passwordController.text,
-                                );
-                                if (user != null) {
-                                  Navigator.pushReplacement(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => DashboardScreen()),
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  final user = await authService.login(
+                                    _emailController.text,
+                                    _passwordController.text,
                                   );
+                                  if (user != null) {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => DashboardScreen()),
+                                    );
+                                  }
                                 }
-                              }
-                            },
-                            child: Text(
-                              'LOGIN',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w900,
-                                color: Colors.black,
+                              },
+                              child: Text(
+                                'LOGIN',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w900,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ),
