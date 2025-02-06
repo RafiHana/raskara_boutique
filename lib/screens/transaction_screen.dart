@@ -18,18 +18,17 @@ class TransactionScreen extends StatelessWidget {
       body: Column(
         children: [
           Padding(
-            padding: EdgeInsets.only(top: 55, left: 16, right: 16, bottom: 10), 
+            padding: EdgeInsets.only(top: 55, left: 16, right: 16, bottom: 10),
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(25),
                 boxShadow: [
                   BoxShadow(
-                    // ignore: deprecated_member_use
-                    color: Colors.black.withOpacity(0.3), 
+                    color: Colors.black.withOpacity(0.3),
                     blurRadius: 20,
-                    spreadRadius: 5, 
-                    offset: Offset(0, 8), 
+                    spreadRadius: 5,
+                    offset: Offset(0, 8),
                   ),
                 ],
               ),
@@ -42,35 +41,35 @@ class TransactionScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color.fromARGB(255, 81, 6, 243),
+                      color: Color.fromARGB(255, 81, 6, 243),
                     ),
                   ),
                   Row(
                     children: [
-                      IconButton(
+                      IconButton( // hapus produk
                         icon: SvgPicture.asset(
                           'assets/images/minus.svg',
                           width: 10,
                           height: 10,
-                          color: const Color.fromARGB(255, 81, 6, 243),
+                          color: Color.fromARGB(255, 81, 6, 243),
                         ),
                         onPressed: () {},
                       ),
-                      IconButton(
+                      IconButton( //tambah produk
                         icon: SvgPicture.asset(
                           'assets/images/plus.svg',
                           width: 24,
                           height: 24,
-                          color: const Color.fromARGB(255, 81, 6, 243),
+                          color: Color.fromARGB(255, 81, 6, 243),
                         ),
                         onPressed: () {},
                       ),
-                      IconButton(
+                      IconButton( // keranjang belanja
                         icon: SvgPicture.asset(
                           'assets/images/cart.svg',
                           width: 24,
                           height: 24,
-                          color: const Color.fromARGB(255, 81, 6, 243),
+                          color: Color.fromARGB(255, 81, 6, 243),
                         ),
                         onPressed: () {},
                       ),
@@ -84,6 +83,7 @@ class TransactionScreen extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: GridView.builder(
+                scrollDirection: Axis.vertical, 
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
@@ -96,13 +96,12 @@ class TransactionScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(20),
-                        boxShadow: [
+                      boxShadow: [
                         BoxShadow(
-                          // ignore: deprecated_member_use
-                          color: Colors.black.withOpacity(0.2), 
+                          color: Colors.black.withOpacity(0.2),
                           blurRadius: 3,
-                          spreadRadius: 2, 
-                          offset: Offset(0, 3), 
+                          spreadRadius: 2,
+                          offset: Offset(0, 3),
                         ),
                       ],
                     ),
@@ -115,6 +114,28 @@ class TransactionScreen extends StatelessWidget {
                             child: Image.asset(
                               productImages[index],
                               fit: BoxFit.cover,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(),
+                          child: Text(
+                            'Batik Magelang', //harga produk
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.symmetric(),
+                          child: Text(
+                            'Rp.250.000', //harga produk
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
                             ),
                           ),
                         ),
