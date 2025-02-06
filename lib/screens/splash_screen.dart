@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart'; 
+import 'package:provider/provider.dart';
+import 'login_screen.dart';
+import 'dashboard_screen.dart';
+import '../services/auth_service.dart';
 
 class SplashScreen extends StatefulWidget {
   @override
@@ -10,10 +13,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final authService = Provider.of<AuthService>(context, listen: false);
+    bool isLoggedIn = await authService.isLoggedIn();
+
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => LoginScreen()),
+        MaterialPageRoute(
+          builder: (context) => isLoggedIn ? DashboardScreen() : LoginScreen(),
+        ),
       );
     });
   }
@@ -23,7 +35,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       body: Center(
-        child: Image.asset('assets/images/Logo.png'), 
+        child: Image.asset('assets/images/Logo.png'),
       ),
     );
   }
