@@ -1,15 +1,165 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:image_picker/image_picker.dart';
+import '../models/product.dart';
+import '../services/api_service.dart';
+import 'package:raskara_boutique/services/image_storage.dart';
+import 'cart_screen.dart';
 
-class TransactionScreen extends StatelessWidget {
-  final List<String> productImages = [
-    'assets/images/Logo.png',
-    'assets/images/Logo.png',
-    'assets/images/Logo.png',
-    'assets/images/Logo.png',
-    'assets/images/Logo.png',
-    'assets/images/Logo.png',
-  ];
+class TransactionScreen extends StatefulWidget {
+  @override
+  _TransactionScreenState createState() => _TransactionScreenState();
+}
+
+class _TransactionScreenState extends State<TransactionScreen> {
+  List<Product> products = [];
+  List<Product> cartItems = [];
+  bool isDeleteMode = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProducts();
+  }
+
+  Future<void> _loadProducts() async {
+    try {
+      final loadedProducts = await ApiService.getProducts();
+      setState(() {
+        products = loadedProducts;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat produk: $e')),
+      );
+    }
+  }
+
+  void _showAddProductDialog() async {
+    TextEditingController nameController = TextEditingController();
+    TextEditingController priceController = TextEditingController();
+    File? selectedImage;
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Tambah Produk'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: InputDecoration(labelText: 'Nama Produk'),
+                ),
+                TextField(
+                  controller: priceController,
+                  decoration: InputDecoration(labelText: 'Harga Produk'),
+                  keyboardType: TextInputType.number,
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    if (image != null) {
+                      selectedImage = File(image.path);
+                    }
+                  },
+                  child: Text('Pilih Gambar'),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () async {
+                if (nameController.text.isNotEmpty &&
+                    priceController.text.isNotEmpty &&
+                    selectedImage != null) {
+                  try {
+                    final imagePath = await ImageStorage.saveImage(selectedImage!);
+
+                    final newProduct = Product(
+                      name: nameController.text,
+                      price: double.parse(priceController.text),
+                      imagePath: imagePath,
+                    );
+                    await ApiService.addProduct(newProduct);
+
+                    await _loadProducts();
+                    Navigator.pop(context);
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Gagal menambahkan produk: $e')),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Harap isi semua field!')),
+                  );
+                }
+              },
+              child: Text('Tambah'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteProductDialog() async {
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Pilih Produk yang Akan Dihapus'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: products.map((product) {
+              return ListTile(
+                title: Text(product.name),
+                trailing: isDeleteMode
+                    ? IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () async {
+                          await ApiService.deleteProduct(product.id!);
+                          await _loadProducts();
+                          Navigator.pop(context);
+                        },
+                      )
+                    : null,
+                onTap: () {
+                  setState(() {
+                    isDeleteMode = true;
+                  });
+                },
+              );
+            }).toList(),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Batal'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _addToCart(int index) {
+    setState(() {
+      cartItems.add(products[index]);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${products[index].name} ditambahkan ke keranjang')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,35 +196,42 @@ class TransactionScreen extends StatelessWidget {
                   ),
                   Row(
                     children: [
-                      IconButton( // hapus produk
+                      IconButton(
                         icon: SvgPicture.asset(
                           'assets/images/minus.svg',
                           width: 10,
                           height: 10,
                           color: Color.fromARGB(255, 81, 6, 243),
                         ),
-                        onPressed: () {},
+                        onPressed: _showDeleteProductDialog,
                       ),
-                      IconButton( //tambah produk
+                      IconButton(
                         icon: SvgPicture.asset(
                           'assets/images/plus.svg',
                           width: 24,
                           height: 24,
                           color: Color.fromARGB(255, 81, 6, 243),
                         ),
-                        onPressed: () {},
+                        onPressed: _showAddProductDialog,
                       ),
-                      IconButton( // keranjang belanja
+                      IconButton(
                         icon: SvgPicture.asset(
                           'assets/images/cart.svg',
                           width: 24,
                           height: 24,
                           color: Color.fromARGB(255, 81, 6, 243),
                         ),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CartScreen(cartItems: cartItems),
+                            ),
+                          );
+                        },
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -83,15 +240,16 @@ class TransactionScreen extends StatelessWidget {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: GridView.builder(
-                scrollDirection: Axis.vertical, 
+                scrollDirection: Axis.vertical,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
                   mainAxisSpacing: 20,
                   childAspectRatio: 0.75,
                 ),
-                itemCount: productImages.length,
+                itemCount: products.length,
                 itemBuilder: (context, index) {
+                  final product = products[index];
                   return Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
@@ -111,16 +269,28 @@ class TransactionScreen extends StatelessWidget {
                         Expanded(
                           child: Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              productImages[index],
-                              fit: BoxFit.cover,
+                            child: FutureBuilder<File?>(
+                              future: ImageStorage.getImage(product.imagePath),
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData && snapshot.data != null) {
+                                  return Image.file(
+                                    snapshot.data!,
+                                    fit: BoxFit.cover,
+                                  );
+                                } else {
+                                  return Image.asset(
+                                    'assets/images/placeholder.png',
+                                    fit: BoxFit.cover,
+                                  );
+                                }
+                              },
                             ),
                           ),
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(),
                           child: Text(
-                            'Batik Magelang', //harga produk
+                            product.name,
                             style: TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w600,
@@ -131,7 +301,7 @@ class TransactionScreen extends StatelessWidget {
                         Padding(
                           padding: EdgeInsets.symmetric(),
                           child: Text(
-                            'Rp.250.000', //harga produk
+                            'Rp.${product.price}',
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -141,17 +311,20 @@ class TransactionScreen extends StatelessWidget {
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: Container(
-                            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                            decoration: BoxDecoration(
-                              color: Colors.amber,
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            child: Text(
-                              '+ Add to cart',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                          child: GestureDetector(
+                            onTap: () => _addToCart(index),
+                            child: Container(
+                              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                              decoration: BoxDecoration(
+                                color: Colors.amber,
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Text(
+                                '+ Add to cart',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
                               ),
                             ),
                           ),

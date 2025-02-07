@@ -42,6 +42,7 @@ class RaskaraApp extends StatelessWidget {
   }
 }
 
+
 class MyRaskaraNavigation extends StatefulWidget {
   @override
   _MyRaskaraNavigationState createState() => _MyRaskaraNavigationState();
@@ -65,63 +66,47 @@ class _MyRaskaraNavigationState extends State<MyRaskaraNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
-      bottomNavigationBar: SafeArea(
-        bottom: false,
-        child: Container(
-          height: 70 + MediaQuery.of(context).viewPadding.bottom,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black12,
-                blurRadius: 5,
-              ),
-            ],
+      body: _screens[_currentIndex], // Gunakan IndexedStack jika diperlukan
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _currentIndex,
+        onTap: _onTabTapped,
+        items: [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Dashboard',
           ),
-          child: BottomNavigationBar(
-            currentIndex: _currentIndex,
-            onTap: _onTabTapped,
-            type: BottomNavigationBarType.fixed,
-            selectedFontSize: 12,
-            unselectedFontSize: 12,
-            selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: TextStyle(fontWeight: FontWeight.normal),
-            showSelectedLabels: true,
-            showUnselectedLabels: true,
-            items: [
-              _buildNavItem('assets/images/nav_home.svg', "Dashboard", 0),
-              _buildNavItem('assets/images/nav_transaction.svg', "Transaksi", 1),
-              _buildNavItem('assets/images/nav_history.svg', "Histori", 2),
-            ],
+          BottomNavigationBarItem(
+            icon: Icon(Icons.shopping_cart),
+            label: 'Transaksi',
           ),
-        ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: 'Histori',
+          ),
+        ],
       ),
-    );
-  }
-
-  BottomNavigationBarItem _buildNavItem(
-      String iconPath, String label, int index) {
-    bool isSelected = _currentIndex == index;
-    return BottomNavigationBarItem(
-      icon: Container(
-        padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(
-          color: isSelected ? Colors.purple.shade100 : Colors.transparent,
-          shape: BoxShape.rectangle,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: SvgPicture.asset(
-          iconPath,
-          width: 24,
-          height: 24,
-          color: Colors.black,
-        ),
-      ),
-      label: label,
     );
   }
 }
+
+  // BottomNavigationBarItem _buildNavItem(
+  //     String iconPath, String label, int index) {
+  //   bool isSelected = _currentIndex == index;
+  //   return BottomNavigationBarItem(
+  //     icon: Container(
+  //       padding: EdgeInsets.all(8),
+  //       decoration: BoxDecoration(
+  //         color: isSelected ? Colors.purple.shade100 : Colors.transparent,
+  //         shape: BoxShape.rectangle,
+  //         borderRadius: BorderRadius.circular(20),
+  //       ),
+  //       child: SvgPicture.asset(
+  //         iconPath,
+  //         width: 24,
+  //         height: 24,
+  //         color: Colors.black,
+  //       ),
+  //     ),
+  //     label: label,
+  //   );
+  // }

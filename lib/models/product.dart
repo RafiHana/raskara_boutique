@@ -1,17 +1,26 @@
 class Product {
-  final String id;
+  final int? id;
   final String name;
-  final String type;
-  final String size;
   final double price;
-  final String imageUrl;
+  final String imagePath;
 
-  Product({
-    required this.id,
-    required this.name,
-    required this.type,
-    required this.size,
-    required this.price,
-    required this.imageUrl,
-  });
+  Product({this.id, required this.name, required this.price, required this.imagePath});
+
+  factory Product.fromMap(Map<String, dynamic> map) {
+    return Product(
+      id: map['id'],
+      name: map['name'],
+      price: (map['price'] as num).toDouble(),
+      imagePath: map['imagePath'],
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'price': price,
+      'imagePath': imagePath,
+    };
+  }
 }
