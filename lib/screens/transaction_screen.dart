@@ -82,14 +82,13 @@ class _TransactionScreenState extends State<TransactionScreen> {
                     priceController.text.isNotEmpty &&
                     selectedImage != null) {
                   try {
-                    final imagePath = await ImageStorage.saveImage(selectedImage!);
-
                     final newProduct = Product(
                       name: nameController.text,
                       price: double.parse(priceController.text),
-                      imagePath: imagePath,
+                      imagePath: '', 
                     );
-                    await ApiService.addProduct(newProduct);
+
+                    await ApiService.addProduct(newProduct, selectedImage!);
 
                     await _loadProducts();
                     Navigator.pop(context);
@@ -269,20 +268,18 @@ class _TransactionScreenState extends State<TransactionScreen> {
                         Expanded(
                           child: Padding(
                             padding: EdgeInsets.all(8.0),
-                            child: FutureBuilder<File?>(
-                              future: ImageStorage.getImage(product.imagePath),
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData && snapshot.data != null) {
-                                  return Image.file(
-                                    snapshot.data!,
-                                    fit: BoxFit.cover,
-                                  );
-                                } else {
-                                  return Image.asset(
-                                    'assets/images/placeholder.png',
-                                    fit: BoxFit.cover,
-                                  );
-                                }
+                            child: Image.network(
+                              product.imagePath,
+                              fit: BoxFit.cover,
+                              loadingBuilder: (context, child, loadingProgress) {
+                                if (loadingProgress == null) return child;
+                                return Center(child: CircularProgressIndicator());
+                              },
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/placeholder.png', 
+                                  fit: BoxFit.cover,
+                                );
                               },
                             ),
                           ),

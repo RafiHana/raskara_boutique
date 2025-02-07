@@ -10,7 +10,7 @@ class Product {
     return Product(
       id: map['id'],
       name: map['name'],
-      price: (map['price'] as num).toDouble(),
+      price: (map['price'] is num) ? map['price'].toDouble() : double.parse(map['price'].toString()), 
       imagePath: map['imagePath'],
     );
   }
@@ -19,7 +19,7 @@ class Product {
     return {
       'id': id,
       'name': name,
-      'price': price,
+      'price': price, 
       'imagePath': imagePath,
     };
   }

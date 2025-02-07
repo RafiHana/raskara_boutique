@@ -7,7 +7,6 @@ import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/auth_service.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -66,7 +65,7 @@ class _MyRaskaraNavigationState extends State<MyRaskaraNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex], // Gunakan IndexedStack jika diperlukan
+      body: _screens[_currentIndex], 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
@@ -89,24 +88,3 @@ class _MyRaskaraNavigationState extends State<MyRaskaraNavigation> {
   }
 }
 
-  // BottomNavigationBarItem _buildNavItem(
-  //     String iconPath, String label, int index) {
-  //   bool isSelected = _currentIndex == index;
-  //   return BottomNavigationBarItem(
-  //     icon: Container(
-  //       padding: EdgeInsets.all(8),
-  //       decoration: BoxDecoration(
-  //         color: isSelected ? Colors.purple.shade100 : Colors.transparent,
-  //         shape: BoxShape.rectangle,
-  //         borderRadius: BorderRadius.circular(20),
-  //       ),
-  //       child: SvgPicture.asset(
-  //         iconPath,
-  //         width: 24,
-  //         height: 24,
-  //         color: Colors.black,
-  //       ),
-  //     ),
-  //     label: label,
-  //   );
-  // }
