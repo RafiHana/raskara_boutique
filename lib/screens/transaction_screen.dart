@@ -2,11 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
-import 'package:raskara_boutique/services/image_storage.dart';
+import '../services/image_storage.dart';
 import 'cart_screen.dart';
-import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 
 class TransactionScreen extends StatefulWidget {
@@ -16,7 +16,7 @@ class TransactionScreen extends StatefulWidget {
 
 class _TransactionScreenState extends State<TransactionScreen> {
   List<Product> products = [];
-  List<Product> cartItems = [];
+  List<int> selectedItems = [];
   bool isDeleteMode = false;
 
   @override
@@ -24,20 +24,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
     super.initState();
     _loadProducts();
   }
-
-  Future<void> _loadProducts() async {
-    try {
-      final loadedProducts = await ApiService.getProducts();
-      setState(() {
-        products = loadedProducts;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal memuat produk: $e')),
-      );
-    }
-  }
-
   void _showAddProductDialog() async {
     TextEditingController nameController = TextEditingController();
     TextEditingController priceController = TextEditingController();
@@ -114,56 +100,59 @@ class _TransactionScreenState extends State<TransactionScreen> {
     );
   }
 
-  void _showDeleteProductDialog() async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Pilih Produk yang Akan Dihapus'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: products.map((product) {
-              return ListTile(
-                title: Text(product.name),
-                trailing: isDeleteMode
-                    ? IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () async {
-                          await ApiService.deleteProduct(product.id!);
-                          await _loadProducts();
-                          Navigator.pop(context);
-                        },
-                      )
-                    : null,
-                onTap: () {
-                  setState(() {
-                    isDeleteMode = true;
-                  });
-                },
-              );
-            }).toList(),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Batal'),
-            ),
-          ],
-        );
-      },
-    );
+  Future<void> _loadProducts() async {
+    try {
+      final loadedProducts = await ApiService.getProducts();
+      setState(() {
+        products = loadedProducts;
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal memuat produk: $e')),
+      );
+    }
+  }
+
+  void _toggleSelection(int index) {
+    setState(() {
+      if (selectedItems.contains(index)) {
+        selectedItems.remove(index);
+      } else {
+        selectedItems.add(index);
+      }
+    });
+  }
+
+  void _startDeleteMode() {
+    setState(() {
+      isDeleteMode = true;
+      selectedItems.clear();
+    });
+  }
+
+  void _cancelDeleteMode() {
+    setState(() {
+      isDeleteMode = false;
+      selectedItems.clear();
+    });
+  }
+
+  Future<void> _deleteSelectedProducts() async {
+    for (int index in selectedItems) {
+      await ApiService.deleteProduct(products[index].id!);
+    }
+    await _loadProducts();
+    _cancelDeleteMode();
   }
 
   void _addToCart(int index) {
-  final cartProvider = Provider.of<CartProvider>(context, listen: false);
-  cartProvider.addItem(products[index]); 
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    cartProvider.addItem(products[index]);
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text('${products[index].name} ditambahkan ke keranjang'),
-    ),
-  );
-}
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${products[index].name} ditambahkan ke keranjang')),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -200,15 +189,25 @@ class _TransactionScreenState extends State<TransactionScreen> {
                   ),
                   Row(
                     children: [
-                      IconButton(
-                        icon: SvgPicture.asset(
-                          'assets/images/minus.svg',
-                          width: 10,
-                          height: 10,
-                          color: Color.fromARGB(255, 81, 6, 243),
+                      if (isDeleteMode) ...[
+                        IconButton(
+                          icon: Icon(Icons.close, color: Colors.red),
+                          onPressed: _cancelDeleteMode,
                         ),
-                        onPressed: _showDeleteProductDialog,
-                      ),
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: selectedItems.isEmpty ? null : _deleteSelectedProducts,
+                        ),
+                      ] else
+                        IconButton(
+                          icon: SvgPicture.asset(
+                            'assets/images/minus.svg',
+                            width: 10,
+                            height: 10,
+                            color: Color.fromARGB(255, 81, 6, 243),
+                          ),
+                          onPressed: _startDeleteMode,
+                        ),
                       IconButton(
                         icon: SvgPicture.asset(
                           'assets/images/plus.svg',
@@ -228,9 +227,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                              builder: (context) => CartScreen(), 
-                            ),
+                            MaterialPageRoute(builder: (context) => CartScreen()),
                           );
                         },
                       ),
@@ -244,7 +241,6 @@ class _TransactionScreenState extends State<TransactionScreen> {
             child: Padding(
               padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: GridView.builder(
-                scrollDirection: Axis.vertical,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10,
@@ -254,87 +250,74 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 itemCount: products.length,
                 itemBuilder: (context, index) {
                   final product = products[index];
-                  return Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          blurRadius: 3,
-                          spreadRadius: 2,
-                          offset: Offset(0, 3),
-                        ),
-                      ],
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.all(8.0),
-                            child: Image.network(
-                              product.imagePath,
-                              fit: BoxFit.cover,
-                              loadingBuilder:
-                                  (context, child, loadingProgress) {
-                                if (loadingProgress == null) return child;
-                                return Center(
-                                    child: CircularProgressIndicator());
-                              },
-                              errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/images/placeholder.png',
-                                  fit: BoxFit.cover,
-                                );
-                              },
-                            ),
+                  final isSelected = selectedItems.contains(index);
+
+                  return GestureDetector(
+                    onTap: isDeleteMode ? () => _toggleSelection(index) : null,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 3,
+                            spreadRadius: 2,
+                            offset: Offset(0, 3),
                           ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(),
-                          child: Text(
-                            product.name,
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(),
-                          child: Text(
-                            "Rp.${product.price.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]}.')}",
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.black87,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.symmetric(vertical: 8.0),
-                          child: GestureDetector(
-                            onTap: () => _addToCart(index),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 20),
-                              decoration: BoxDecoration(
-                                color: Colors.amber,
-                                borderRadius: BorderRadius.circular(20),
+                        ],
+                        border: isSelected ? Border.all(color: Colors.red, width: 3) : null,
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.all(8.0),
+                              child: Image.network(
+                                product.imagePath,
+                                fit: BoxFit.cover,
+                                loadingBuilder: (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(child: CircularProgressIndicator());
+                                },
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Image.asset('assets/images/placeholder.png', fit: BoxFit.cover);
+                                },
                               ),
-                              child: Text(
-                                '+ Add to cart',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(),
+                            child: Text(
+                              product.name,
+                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
+                            ),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(),
+                            child: Text(
+                              "Rp.${product.price.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]}.')}",
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black87),
+                            ),
+                          ),
+                          if (!isDeleteMode)
+                            Padding(
+                              padding: EdgeInsets.symmetric(vertical: 8.0),
+                              child: GestureDetector(
+                                onTap: () => _addToCart(index),
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                                  decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(20)),
+                                  child: Text(
+                                    '+ Add to cart',
+                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   );
                 },
