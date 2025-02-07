@@ -6,6 +6,8 @@ import '../models/product.dart';
 import '../services/api_service.dart';
 import 'package:raskara_boutique/services/image_storage.dart';
 import 'cart_screen.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
 
 class TransactionScreen extends StatefulWidget {
   @override
@@ -61,7 +63,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () async {
-                    final XFile? image = await ImagePicker().pickImage(source: ImageSource.gallery);
+                    final XFile? image = await ImagePicker()
+                        .pickImage(source: ImageSource.gallery);
                     if (image != null) {
                       selectedImage = File(image.path);
                     }
@@ -85,7 +88,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                     final newProduct = Product(
                       name: nameController.text,
                       price: double.parse(priceController.text),
-                      imagePath: '', 
+                      imagePath: '',
                     );
 
                     await ApiService.addProduct(newProduct, selectedImage!);
@@ -152,13 +155,15 @@ class _TransactionScreenState extends State<TransactionScreen> {
   }
 
   void _addToCart(int index) {
-    setState(() {
-      cartItems.add(products[index]);
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${products[index].name} ditambahkan ke keranjang')),
-    );
-  }
+  final cartProvider = Provider.of<CartProvider>(context, listen: false);
+  cartProvider.addItem(products[index]); // Simpan ke CartProvider
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(
+      content: Text('${products[index].name} ditambahkan ke keranjang'),
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -224,7 +229,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CartScreen(cartItems: cartItems),
+                              builder: (context) => CartScreen(), 
                             ),
                           );
                         },
@@ -271,13 +276,15 @@ class _TransactionScreenState extends State<TransactionScreen> {
                             child: Image.network(
                               product.imagePath,
                               fit: BoxFit.cover,
-                              loadingBuilder: (context, child, loadingProgress) {
+                              loadingBuilder:
+                                  (context, child, loadingProgress) {
                                 if (loadingProgress == null) return child;
-                                return Center(child: CircularProgressIndicator());
+                                return Center(
+                                    child: CircularProgressIndicator());
                               },
                               errorBuilder: (context, error, stackTrace) {
                                 return Image.asset(
-                                  'assets/images/placeholder.png', 
+                                  'assets/images/placeholder.png',
                                   fit: BoxFit.cover,
                                 );
                               },
@@ -298,7 +305,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                         Padding(
                           padding: EdgeInsets.symmetric(),
                           child: Text(
-                            'Rp.${product.price}',
+                            "Rp.${product.price.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]}.')}",
                             style: TextStyle(
                               fontSize: 12,
                               fontWeight: FontWeight.w500,
@@ -311,7 +318,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
                           child: GestureDetector(
                             onTap: () => _addToCart(index),
                             child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 20),
                               decoration: BoxDecoration(
                                 color: Colors.amber,
                                 borderRadius: BorderRadius.circular(20),

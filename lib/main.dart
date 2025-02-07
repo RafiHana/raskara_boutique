@@ -7,6 +7,7 @@ import 'firebase_options.dart';
 import 'package:provider/provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/auth_service.dart';
+import 'providers/cart_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -16,9 +17,8 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        Provider<AuthService>(
-          create: (_) => AuthService(),
-        ),
+        ChangeNotifierProvider(create: (context) => CartProvider()),
+        Provider<AuthService>(create: (_) => AuthService(),),
       ],
       child: RaskaraApp(),
     ),
