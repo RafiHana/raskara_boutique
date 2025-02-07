@@ -156,7 +156,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
 
   void _addToCart(int index) {
   final cartProvider = Provider.of<CartProvider>(context, listen: false);
-  cartProvider.addItem(products[index]); // Simpan ke CartProvider
+  cartProvider.addItem(products[index]); 
 
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(

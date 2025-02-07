@@ -49,12 +49,11 @@ class _CartScreenState extends State<CartScreen> {
       body: Consumer<CartProvider>(
         builder: (context, cartProvider, child) {
           final cartItems = cartProvider.cartItems;
-
           return Column(
             children: [
               Expanded(
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.fromLTRB(16, 80, 16, 10),
                   itemCount: cartItems.length,
                   itemBuilder: (context, index) {
                     return CartItem(
