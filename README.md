@@ -79,44 +79,46 @@ Aplikasi Flutter untuk manajemen toko butik dengan fitur autentikasi, dashboard 
 ---
 
 ## 📂 Struktur Proyek
-   lib/
-   ├── main.dart
-   ├── firebase_options.dart
-   ├── screens/
-   │   ├── splash_screen.dart
-   │   ├── login_screen.dart
-   │   ├── register_screen.dart
-   │   ├── dashboard_screen.dart
-   │   ├── transaction_screen.dart
-   │   ├── history_screen.dart
-   │   ├── cart_screen.dart
-   │   ├── payment_screen.dart
-   │   └── history_detail_screen.dart
-   ├── widgets/
-   │   ├── chart_widget.dart
-   ├── models/
-   │   ├── product.dart
-   ├── providers/
-   │   ├── cart_provider.dart
-   ├── services/
-   │   ├── api_service.dart
-   │   ├── auth_service.dart
-   │   ├── image_storage.dart
-   └── backend/
-      ├── config/
-      │   ├── db.js
-      ├── controllers/
-      │   ├── productController.js
-      ├── models/
-      │   ├── ProductModel.js
-      ├── routes/
-      │   ├── productRoutes.js
-      ├── public/
-      │   └── uploads/
-      ├── node_modules/
-      ├── package.json
-      ├── package-lock.json
-      └── server.js
+
+```plaintext
+lib/
+├── main.dart
+├── firebase_options.dart
+├── screens/
+│   ├── splash_screen.dart
+│   ├── login_screen.dart
+│   ├── register_screen.dart
+│   ├── dashboard_screen.dart
+│   ├── transaction_screen.dart
+│   ├── history_screen.dart
+│   ├── cart_screen.dart
+│   ├── payment_screen.dart
+│   └── history_detail_screen.dart
+├── widgets/
+│   ├── chart_widget.dart
+├── models/
+│   ├── product.dart
+├── providers/
+│   ├── cart_provider.dart
+├── services/
+│   ├── api_service.dart
+│   ├── auth_service.dart
+│   ├── image_storage.dart
+└── backend/
+    ├── config/
+    │   ├── db.js
+    ├── controllers/
+    │   ├── productController.js
+    ├── models/
+    │   ├── ProductModel.js
+    ├── routes/
+    │   ├── productRoutes.js
+    ├── public/
+    │   └── uploads/
+    ├── node_modules/
+    ├── package.json
+    ├── package-lock.json
+    └── server.js
 
 
 ## 🤝 Kontributor
