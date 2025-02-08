@@ -5,7 +5,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import '../models/product.dart';
 import '../services/api_service.dart';
-import '../services/image_storage.dart';
 import 'cart_screen.dart';
 import '../providers/cart_provider.dart';
 
@@ -24,6 +23,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
     super.initState();
     _loadProducts();
   }
+
   void _showAddProductDialog() async {
     TextEditingController nameController = TextEditingController();
     TextEditingController priceController = TextEditingController();
@@ -150,7 +150,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
     cartProvider.addItem(products[index]);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${products[index].name} ditambahkan ke keranjang')),
+      SnackBar(
+          content: Text('${products[index].name} ditambahkan ke keranjang')),
     );
   }
 
@@ -196,7 +197,9 @@ class _TransactionScreenState extends State<TransactionScreen> {
                         ),
                         IconButton(
                           icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: selectedItems.isEmpty ? null : _deleteSelectedProducts,
+                          onPressed: selectedItems.isEmpty
+                              ? null
+                              : _deleteSelectedProducts,
                         ),
                       ] else
                         IconButton(
@@ -227,7 +230,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => CartScreen()),
+                            MaterialPageRoute(
+                                builder: (context) => CartScreen()),
                           );
                         },
                       ),
@@ -266,7 +270,9 @@ class _TransactionScreenState extends State<TransactionScreen> {
                             offset: Offset(0, 3),
                           ),
                         ],
-                        border: isSelected ? Border.all(color: Colors.red, width: 3) : null,
+                        border: isSelected
+                            ? Border.all(color: Colors.red, width: 3)
+                            : null,
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -277,12 +283,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
                               child: Image.network(
                                 product.imagePath,
                                 fit: BoxFit.cover,
-                                loadingBuilder: (context, child, loadingProgress) {
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
                                   if (loadingProgress == null) return child;
-                                  return Center(child: CircularProgressIndicator());
+                                  return Center(
+                                      child: CircularProgressIndicator());
                                 },
                                 errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset('assets/images/placeholder.png', fit: BoxFit.cover);
+                                  return Image.asset(
+                                      'assets/images/placeholder.png',
+                                      fit: BoxFit.cover);
                                 },
                               ),
                             ),
@@ -291,14 +301,20 @@ class _TransactionScreenState extends State<TransactionScreen> {
                             padding: EdgeInsets.symmetric(),
                             child: Text(
                               product.name,
-                              style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: Colors.black87),
+                              style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.black87),
                             ),
                           ),
                           Padding(
                             padding: EdgeInsets.symmetric(),
                             child: Text(
                               "Rp.${product.price.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{3})(?=\d)'), (Match m) => '${m[1]}.')}",
-                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500, color: Colors.black87),
+                              style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.black87),
                             ),
                           ),
                           if (!isDeleteMode)
@@ -307,11 +323,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
                               child: GestureDetector(
                                 onTap: () => _addToCart(index),
                                 child: Container(
-                                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
-                                  decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(20)),
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 8, horizontal: 20),
+                                  decoration: BoxDecoration(
+                                      color: Colors.amber,
+                                      borderRadius: BorderRadius.circular(20)),
                                   child: Text(
                                     '+ Add to cart',
-                                    style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black),
                                   ),
                                 ),
                               ),
