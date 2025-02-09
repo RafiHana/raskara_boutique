@@ -27,7 +27,9 @@ class ApiService {
     var imageStream = http.ByteStream(imageFile.openRead());
     var length = await imageFile.length();
     var multipartFile = http.MultipartFile(
-      'image', imageStream, length,
+      'image',
+      imageStream,
+      length,
       filename: imageFile.path.split('/').last,
       contentType: MediaType('image', 'png'),
     );

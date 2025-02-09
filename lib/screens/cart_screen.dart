@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:raskara_boutique/screens/payment_screen.dart';
 import '../providers/cart_provider.dart';
 
 class CartScreen extends StatefulWidget {
@@ -31,7 +32,8 @@ class _CartScreenState extends State<CartScreen> {
   void _removeSelectedItems(CartProvider cartProvider) {
     if (_selectedItems.isEmpty) return;
 
-    final itemsToRemove = _selectedItems.map((index) => cartProvider.cartItems[index]).toList();
+    final itemsToRemove =
+        _selectedItems.map((index) => cartProvider.cartItems[index]).toList();
     for (var item in itemsToRemove) {
       cartProvider.removeItem(item);
     }
@@ -181,9 +183,20 @@ class CartBottomBar extends StatelessWidget {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              onPressed: isSelecting ? null : () {
-                // Tambahkan aksi checkout
-              },
+              onPressed: isSelecting
+                  ? null
+                  : () {
+                      print("Checkout button pressed!");
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) {
+                          print("Navigating to PaymentScreen...");
+                          return PaymentScreen();
+                        }),
+                      ).then((_) {
+                        print("Returned from PaymentScreen");
+                      });
+                    },
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 child: Row(

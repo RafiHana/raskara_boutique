@@ -18,7 +18,9 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (context) => CartProvider()),
-        Provider<AuthService>(create: (_) => AuthService(),),
+        Provider<AuthService>(
+          create: (_) => AuthService(),
+        ),
       ],
       child: RaskaraApp(),
     ),
@@ -36,11 +38,10 @@ class RaskaraApp extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
         useMaterial3: true,
       ),
-      home: SplashScreen(), 
+      home: SplashScreen(),
     );
   }
 }
-
 
 class MyRaskaraNavigation extends StatefulWidget {
   @override
@@ -65,7 +66,7 @@ class _MyRaskaraNavigationState extends State<MyRaskaraNavigation> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _screens[_currentIndex], 
+      body: _screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         onTap: _onTabTapped,
@@ -87,4 +88,3 @@ class _MyRaskaraNavigationState extends State<MyRaskaraNavigation> {
     );
   }
 }
-

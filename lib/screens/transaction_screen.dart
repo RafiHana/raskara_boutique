@@ -281,7 +281,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                             child: Padding(
                               padding: EdgeInsets.all(8.0),
                               child: Image.network(
-                                product.imagePath,
+                                product.imagePath ?? '',
                                 fit: BoxFit.cover,
                                 loadingBuilder:
                                     (context, child, loadingProgress) {

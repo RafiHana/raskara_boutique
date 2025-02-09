@@ -25,6 +25,7 @@ dependencies:
   firebase_storage: ^12.4.2
   sqflite: ^2.4.1
   http: ^1.3.0
+  webview_flutter: ^4.10.0
 
 
 dev_dependencies:
@@ -43,3 +44,11 @@ flutter:
     - assets/images/minus.svg
     - assets/images/cart.svg
     - assets/images/placeholder.png
+
+    - assets/payment/bca.png
+    - assets/payment/bni.png
+    - assets/payment/briva.png
+    - assets/payment/dana.png
+    - assets/payment/gopay.png
+    - assets/payment/qris.png
+    
