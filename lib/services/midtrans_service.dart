@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class MidtransService {
-  static Future<String?> createTransaction(double amount) async {
+  static Future<String?> createTransaction(double amount, String selectedPaymentMethod) async {
     print("Requesting Snap Token for amount: $amount...");
 
     try {

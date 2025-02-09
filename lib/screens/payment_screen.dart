@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import '../services/midtrans_service.dart';
+import 'payment_detail_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   @override
@@ -11,28 +12,42 @@ class PaymentScreen extends StatefulWidget {
 class _PaymentScreenState extends State<PaymentScreen> {
   String selectedPaymentMethod = "BCA";
 
-void _handlePayment(BuildContext context) async {
-  final cartProvider = Provider.of<CartProvider>(context, listen: false);
-  final totalAmount = cartProvider.totalPrice;
+  void _handlePayment(BuildContext context) async {
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    final totalAmount = cartProvider.totalPrice;
 
-  print("Requesting Snap Token for amount: $totalAmount...");
+    print("🔄 Memproses pembayaran sebesar Rp$totalAmount...");
 
-  final snapToken = await MidtransService.createTransaction(totalAmount);
-  
-  if (snapToken == null) {
-    print("Error: Snap Token is null. Payment cannot proceed.");
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text("Gagal mendapatkan token pembayaran. Silakan coba lagi.")),
+    final paymentData = await MidtransService.createTransaction(
+      totalAmount,
+      selectedPaymentMethod,
     );
-    return;
+
+    if (paymentData == null) {
+      print("❌ Gagal mendapatkan data pembayaran.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Gagal mendapatkan data pembayaran. Silakan coba lagi.")),
+      );
+      return;
+    }
+
+    final int orderId = int.tryParse(paymentData["orderId"] ?? '0') ?? 0;
+    final String paymentUrl = paymentData["paymentUrl"];
+    final String? qrCodeUrl = paymentData["qrCodeUrl"];
+
+    print("✅ Navigating to PaymentDetailScreen...");
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PaymentDetailScreen(
+          orderId: orderId,
+          grossAmount: totalAmount,
+          paymentUrl: paymentUrl,
+          qrCodeUrl: qrCodeUrl,
+        ),
+      ),
+    );
   }
-
-  print("✅ Snap Token received: $snapToken");
-  print("✅ Navigating to PaymentWebView...");
-  MidtransService.startPayment(context, snapToken);
-}
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -125,19 +140,13 @@ void _handlePayment(BuildContext context) async {
         color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 6,
-          ),
+          BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 6),
         ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            "Payment Method",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
+          const Text("Payment Method", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const Divider(),
           _buildPaymentOption("BCA", "assets/payment/bca.png"),
           _buildPaymentOption("BRIVA", "assets/payment/briva.png"),
