@@ -15,7 +15,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
   void _handlePayment(BuildContext context) async {
     final cartProvider = Provider.of<CartProvider>(context, listen: false);
     final totalAmount = cartProvider.totalPrice;
-
     print("🔄 Memproses pembayaran sebesar Rp$totalAmount...");
 
     final paymentData = await MidtransService.createTransaction(
@@ -23,27 +22,38 @@ class _PaymentScreenState extends State<PaymentScreen> {
       selectedPaymentMethod,
     );
 
-    if (paymentData == null) {
+    if (paymentData == null || paymentData["orderId"] == null) {
       print("❌ Gagal mendapatkan data pembayaran.");
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Gagal mendapatkan data pembayaran. Silakan coba lagi.")),
+        const SnackBar(
+          content:
+              Text("Gagal mendapatkan data pembayaran. Silakan coba lagi."),
+        ),
       );
       return;
     }
 
-    final int orderId = int.tryParse(paymentData["orderId"] ?? '0') ?? 0;
-    final String paymentUrl = paymentData["paymentUrl"];
-    final String? qrCodeUrl = paymentData["qrCodeUrl"];
+    final String orderId = paymentData["orderId"].toString();
+    final String? virtualAccount = paymentData["virtualAccount"]?.toString();
 
-    print("✅ Navigating to PaymentDetailScreen...");
+    if (virtualAccount == null) {
+      print("❌ Virtual Account tidak ditemukan.");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Virtual Account tidak ditemukan. Silakan coba lagi."),
+        ),
+      );
+      return;
+    }
+
+    print("✅ Virtual Account diterima: $virtualAccount");
     Navigator.push(
       context,
       MaterialPageRoute(
         builder: (context) => PaymentDetailScreen(
           orderId: orderId,
           grossAmount: totalAmount,
-          paymentUrl: paymentUrl,
-          qrCodeUrl: qrCodeUrl,
+          virtualAccount: virtualAccount,
         ),
       ),
     );
@@ -146,7 +156,8 @@ class _PaymentScreenState extends State<PaymentScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text("Payment Method", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text("Payment Method",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const Divider(),
           _buildPaymentOption("BCA", "assets/payment/bca.png"),
           _buildPaymentOption("BRIVA", "assets/payment/briva.png"),
@@ -193,6 +204,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
           const SizedBox(height: 12),
           ElevatedButton(
+            // tombol Pay Now
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.purple,
               shape: RoundedRectangleBorder(
