@@ -20,7 +20,7 @@ void _handlePayment(BuildContext context) async {
   final snapToken = await MidtransService.createTransaction(totalAmount);
   
   if (snapToken == null) {
-    print("❌ Error: Snap Token is null. Payment cannot proceed.");
+    print("Error: Snap Token is null. Payment cannot proceed.");
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text("Gagal mendapatkan token pembayaran. Silakan coba lagi.")),
     );
@@ -51,13 +51,10 @@ void _handlePayment(BuildContext context) async {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Order Detail Section
             _buildOrderDetail(cartItems),
             const SizedBox(height: 20),
-            // Payment Method Section
             _buildPaymentMethod(),
             const Spacer(),
-            // Total Price & Pay Button
             _buildBottomBar(context, cartProvider.totalPrice),
           ],
         ),
@@ -142,9 +139,9 @@ void _handlePayment(BuildContext context) async {
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const Divider(),
-          _buildPaymentOption("BCA", "assets/bca.png"),
-          _buildPaymentOption("Mandiri", "assets/mandiri.png"),
-          _buildPaymentOption("GoPay", "assets/gopay.png"),
+          _buildPaymentOption("BCA", "assets/payment/bca.png"),
+          _buildPaymentOption("BRIVA", "assets/payment/briva.png"),
+          _buildPaymentOption("GoPay", "assets/payment/gopay.png"),
         ],
       ),
     );
